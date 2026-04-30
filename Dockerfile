@@ -22,6 +22,8 @@ RUN mkdir -p public/uploads && chmod 777 public/uploads
 RUN cd server && npm install && chmod +x ./node_modules/.bin/prisma && npx prisma generate
 
 # Build frontend (Vite)
+ENV VITE_API_MODE=http
+ENV VITE_API_BASE_URL=/api
 RUN npm run build
 
 # Production settings
