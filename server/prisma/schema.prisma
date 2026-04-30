@@ -1,0 +1,110 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Voyage {
+  id             String   @id @default(uuid())
+  slug           String   @unique
+  kind           String   @default("excursion")
+  region_fr      String   @default("")
+  region_ar      String   @default("")
+  region_en      String   @default("")
+  name_fr        String
+  name_ar        String   @default("")
+  name_en        String   @default("")
+  tagline_fr     String   @default("")
+  tagline_ar     String   @default("")
+  tagline_en     String   @default("")
+  description_fr String   @default("")
+  description_ar String   @default("")
+  description_en String   @default("")
+  country_fr     String   @default("")
+  country_ar     String   @default("")
+  wilaya         String   @default("")
+  daira          String   @default("")
+  commune        String   @default("")
+  image_url      String   @default("")
+  days           Int      @default(1)
+  price_dzd      Int      @default(0)
+  itinerary      String   @default("[]") // JSON string
+  included       String   @default("[]") // JSON string
+  published      Boolean  @default(true)
+  sort_order     Int      @default(0)
+  created_at     DateTime @default(now())
+  updated_at     DateTime @updatedAt
+
+  photos         VoyagePhoto[]
+  bookings       Booking[]
+  testimonials   Testimonial[]
+}
+
+model Booking {
+  id              String    @id @default(uuid())
+  tracking_code   String    @unique
+  voyage_slug     String
+  voyage          Voyage    @relation(fields: [voyage_slug], references: [slug], onDelete: Cascade)
+  voyage_name     String
+  full_name       String
+  phone_primary   String
+  phone_secondary String?
+  travelers       Int       @default(1)
+  wilaya          String
+  daira           String
+  baladya         String
+  pickup_point    String
+  voice_note_url  String?
+  receipt_url     String?
+  total_dzd       Int
+  status          String    @default("awaiting_payment")
+  notes           String?
+  checked_in_at   DateTime?
+  checked_in_by   String?
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+}
+
+model BlacklistedPhone {
+  id         String   @id @default(uuid())
+  phone      String   @unique
+  reason     String?
+  created_at DateTime @default(now())
+}
+
+model SiteSetting {
+  key        String   @id
+  value      String   @default("{}") // JSON string
+  updated_at DateTime @updatedAt
+  updated_by String?
+}
+
+model VoyagePhoto {
+  id         String   @id @default(uuid())
+  voyage_id  String
+  image_url  String
+  caption    String?
+  sort_order Int      @default(0)
+  created_at DateTime @default(now())
+
+  voyage     Voyage   @relation(fields: [voyage_id], references: [id], onDelete: Cascade)
+}
+
+model Testimonial {
+  id               String   @id @default(uuid())
+  author_name      String
+  author_photo_url String?
+  rating           Int      @default(5)
+  message_fr       String   @default("")
+  message_ar       String   @default("")
+  message_en       String   @default("")
+  voyage_slug      String?
+  voyage           Voyage?  @relation(fields: [voyage_slug], references: [slug], onDelete: Cascade)
+  published        Boolean  @default(true)
+  sort_order       Int      @default(0)
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+}

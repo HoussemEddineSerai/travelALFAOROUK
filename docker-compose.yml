@@ -1,0 +1,11 @@
+services:
+  app:
+    build: .
+    ports:
+      - "3000:3000"
+    volumes:
+      - "/var/lib/dokploy/alfarouk/uploads:/app/public/uploads"
+    environment:
+      - PORT=3000
+      - NODE_ENV=production
+    restart: always
